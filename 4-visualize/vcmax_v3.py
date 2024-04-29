@@ -7,7 +7,7 @@ import netCDF4 as NC
 
 
 # 1. Read the data
-infile = "/home/wyujie/DATASERVER/database/GriddingMachine/reprocessed/VCMAX_CESM_1X_1M.nc"
+infile = "/home/wyujie/DATASERVER/database/GriddingMachine/regridded/VCMAX_CESM_1X_1M.nc"
 dset = NC.Dataset(infile, "r")
 lats = dset.variables["lat"][:]
 lons = dset.variables["lon"][:]
