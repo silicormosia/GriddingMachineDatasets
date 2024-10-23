@@ -8,12 +8,12 @@ read_input(config::Dict, year::Int; data_or_std::String = "data") = (
 
     # read the data
     if data_or_std == "data"
-        return read_input(config["FOLDER"], config["FILE_NAME"], config["DATA_LABEL"], year);
+        return read_input(config["FOLDER"], config["FILE_NAME"], config["DATA"], year);
     end;
 
     # read the std (if key exists)
     if haskey(config, "STD_LABEL")
-        return read_input(config["FOLDER"], config["FILE_NAME"], config["STD_LABEL"], year);
+        return read_input(config["FOLDER"], config["FILE_NAME"], config["STD"], year);
     end;
 
     return nothing
@@ -25,23 +25,51 @@ read_input(config::Dict; data_or_std::String = "data") = (
 
     # read the data
     if data_or_std == "data"
-        return read_input(config["FOLDER"], config["FILE_NAME"], config["DATA_LABEL"]);
+        return read_input(config["FOLDER"], config["FILE_NAME"], config["DATA"]);
     end;
 
     # read the std (if key exists)
     if haskey(config, "STD_LABEL")
-        return read_input(config["FOLDER"], config["FILE_NAME"], config["STD_LABEL"]);
+        return read_input(config["FOLDER"], config["FILE_NAME"], config["STD"]);
     end;
 
     return nothing
 );
 
-read_input(folder::String, filename::String, label::String, year::Int) = read_input(folder, replace(filename, "YYYY" => lpad(year, 4, "0")), label);
+read_input(folder::String, filename::String, dict::Dict, year::Int) = read_input(folder, replace(filename, "YYYY" => lpad(year, 4, "0")), dict);
 
-read_input(folder::String, filename::String, label::String) = read_input(joinpath(folder, filename), label);
+read_input(folder::String, filename::String, dict::Dict) = read_input(joinpath(folder, filename), dict);
 
-read_input(filepath::String, label::String) = (
-    data = read_nc(filepath, label);
+read_input(filepath::String, dict::Dict) = (
+    data = read_nc(filepath, dict["LABEL"]);
 
-    return data
+    # if key REV_LAT exists, reverse the latitude
+    data_a = if haskey(dict, "REV_LAT") && dict["REV_LAT"]
+        data[:,end:-1:1,:]
+    else
+        data
+    end;
+
+    # if key REV_LON exists, reverse the longitude
+    data_b = if haskey(dict, "REV_LON") && dict["REV_LON"]
+        data_a[end:-1:1,:,:]
+    else
+        data_a
+    end;
+
+    # if key SCALING exists, scale the data
+    data_c = if haskey(dict, "SCALING") && lowercase(dict["SCALING"]) == "linear"
+        FT = eltype(data_b);
+        data_b .* FT(dict["SCALING_FACTOR"][1]) .+ FT(dict["SCALING_FACTOR"][2])
+    else
+        data_b
+    end;
+
+    # if key LIMITS exists, limit the data
+    if haskey(dict, "LIMITS")
+        mask = data_c .< dict["LIMITS"][1] .|| data_c .> dict["LIMITS"][2];
+        data_c[mask] .= NaN;
+    end;
+
+    return data_c
 );
