@@ -29,7 +29,7 @@ save_input!(config::Dict, data::Array, gm_tag::String, data_or_std::String) = (
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
 
     # save the data to a netcdf file
-    filepath = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER_REPROCESSED"], "$gm_tag.nc");
+    filepath = joinpath(reprocessed_folder_path(config), "$gm_tag.nc");
     data_attributes = Dict{String,String}(
                 "about" => config[uppercase(data_or_std)]["ABOUT"],
                 "unit"  => config[uppercase(data_or_std)]["UNIT"],

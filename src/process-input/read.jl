@@ -5,6 +5,7 @@
 #     2024-Oct-23: Add function to read the input files (netCDF format)
 #     2024-Oct-24: Add change logs when formatting the data based on the configuration
 #     2024-Oct-24: Copy CHANGE_LOGS to CHANGE_LOGS_TO_WRITE to avoid repeatly adding the same logs
+#     2024-Oct-24: Skip the process if the original file does not exist
 #
 #######################################################################################################################################################################################################
 """
@@ -25,7 +26,7 @@ read_input(config::Dict, year::Int; data_or_std::String = "data") = (
 
     # if the key exists, read the data from the FILE_NAME
     if haskey(config, uppercase(data_or_std))
-        return read_input(joinpath(GRIDDING_MACHINE_HOME, "original", config["FOLDER_ORIGINAL"]), config["FILE_NAME"], config[uppercase(data_or_std)], year);
+        return read_input(original_folder_path(config), config["FILE_NAME"], config[uppercase(data_or_std)], year);
     else
         return nothing
     end;
@@ -36,7 +37,7 @@ read_input(config::Dict; data_or_std::String = "data") = (
 
     # if the key exists, read the data from the FILE_NAME
     if haskey(config, uppercase(data_or_std))
-        return read_input(joinpath(GRIDDING_MACHINE_HOME, "original", config["FOLDER_ORIGINAL"]), config["FILE_NAME"], config[uppercase(data_or_std)]);
+        return read_input(original_folder_path(config), config["FILE_NAME"], config[uppercase(data_or_std)]);
     else
         return nothing
     end;
@@ -47,6 +48,14 @@ read_input(folder::String, filename::String, dict::Dict, year::Int) = read_input
 read_input(folder::String, filename::String, dict::Dict) = read_input(joinpath(folder, filename), dict);
 
 read_input(filepath::String, dict::Dict) = (
+    # make sure file exists; otherwise, return nothing
+    if !isfile(filepath)
+        @info "original file $filepath not found, skipping the process...";
+
+        return nothing
+    end;
+
+    # read the data from the netCDF file
     data = read_nc(filepath, dict["LABEL"]);
 
     # clear the change logs
