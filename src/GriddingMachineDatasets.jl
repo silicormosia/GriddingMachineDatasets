@@ -1,3 +1,10 @@
+"""
+
+    GriddingMachineDatasets
+
+Module to prepare artifacts for GriddingMachine.
+
+"""
 module GriddingMachineDatasets
 
 using Revise

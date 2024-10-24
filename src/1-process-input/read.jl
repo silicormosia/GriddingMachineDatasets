@@ -1,5 +1,22 @@
+#######################################################################################################################################################################################################
+#
+# Changes to the function
+# General
+#     2024-Oct-23: Add function to read the input files (netCDF format)
+#     2024-Oct-24: Add change logs when formatting the data based on the configuration
+#
+#######################################################################################################################################################################################################
+"""
 
-# if the DUPLICATED_TASK is true, loop through the years; otherwise, just read the input file from the FILE_NAME
+    read_input(config::Dict, year::Int; data_or_std::String = "data")
+    read_input(config::Dict; data_or_std::String = "data")
+
+Read the input data and format it based on the configuration, given
+- `config` the configuration dictionary
+- `year` the year to read (only for duplicated tasks)
+- `data_or_std` the type of data to read (either "data" or "std")
+
+"""
 function read_input end;
 
 # read the data from a specific year

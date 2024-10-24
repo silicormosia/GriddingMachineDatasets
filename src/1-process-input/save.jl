@@ -1,4 +1,21 @@
+#######################################################################################################################################################################################################
+#
+# Changes to the function
+# General
+#     2024-Oct-23: Add function to save the data to a netCDF file
+#     2024-Oct-24: Add change logs when saving the data based on the configuration
+#
+#######################################################################################################################################################################################################
+"""
 
+    save_input!(config::Dict, data::Array, year::Int)
+
+Save the input data to a netCDF file, given
+- `config` the configuration dictionary
+- `data` the data to save
+- `year` the year to save (only for duplicated tasks)
+
+"""
 function save_input end;
 
 save_input!(config::Dict, data::Array, year::Int) = (
