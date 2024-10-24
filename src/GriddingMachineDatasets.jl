@@ -27,11 +27,11 @@ include("process-input/yaml.jl");
 include("process-input/read.jl");
 include("process-input/verify.jl");
 include("process-input/save.jl");
-include("process-input/pipeline.jl");
+include("process-input/process.jl");
 
 include("deploy-artifact/gmtag.jl");
 include("deploy-artifact/create.jl");
-include("deploy-artifact/pipeline.jl");
+include("deploy-artifact/deploy.jl");
 
 
 end # module
