@@ -31,6 +31,7 @@ include("process-input/pipeline.jl");
 
 include("deploy-artifact/gmtag.jl");
 include("deploy-artifact/create.jl");
+include("deploy-artifact/pipeline.jl");
 
 
 end # module

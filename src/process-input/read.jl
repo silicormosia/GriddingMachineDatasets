@@ -20,25 +20,23 @@ Read the input data and format it based on the configuration, given
 """
 function read_input end;
 
-# read the data from a specific year
 read_input(config::Dict, year::Int; data_or_std::String = "data") = (
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std'";
 
     # if the key exists, read the data from the FILE_NAME
     if haskey(config, uppercase(data_or_std))
-        return read_input(config["FOLDER_ORIGINAL"], config["FILE_NAME"], config[uppercase(data_or_std)], year);
+        return read_input(joinpath(GRIDDING_MACHINE_HOME, "original", config["FOLDER_ORIGINAL"]), config["FILE_NAME"], config[uppercase(data_or_std)], year);
     else
         return nothing
     end;
 );
 
-# read the data from the FILE_NAME
 read_input(config::Dict; data_or_std::String = "data") = (
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std'";
 
     # if the key exists, read the data from the FILE_NAME
     if haskey(config, uppercase(data_or_std))
-        return read_input(config["FOLDER_ORIGINAL"], config["FILE_NAME"], config[uppercase(data_or_std)]);
+        return read_input(joinpath(GRIDDING_MACHINE_HOME, "original", config["FOLDER_ORIGINAL"]), config["FILE_NAME"], config[uppercase(data_or_std)]);
     else
         return nothing
     end;

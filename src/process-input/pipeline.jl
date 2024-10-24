@@ -3,6 +3,7 @@
 # Changes to the function
 # General
 #     2024-Oct-24: Add pipeline function to process the entire dataset (read, verify, save)
+#     2024-Oct-24: Make sure the path exists before saving the reprocessed data
 #
 #######################################################################################################################################################################################################
 """
@@ -18,6 +19,9 @@ function process_dataset! end;
 process_dataset!(yaml_file::String) = process_dataset!(read_yaml(yaml_file));
 
 process_dataset!(config::Dict) = (
+    # make sure the path exists
+    mkpath(joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER_REPROCESSED"]));
+
     # if the task is not a duplicate, process each year; otherwise, process the data
     if !config["DUPLICATED_TASK"]
         process_dataset!(config, nothing);

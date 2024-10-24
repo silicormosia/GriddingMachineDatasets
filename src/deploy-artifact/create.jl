@@ -7,7 +7,7 @@
 #######################################################################################################################################################################################################
 """
 
-    create_artifact!(config::Dict, year::Int)
+    create_artifact!(config::Dict, year::Union{Int,Nothing})
 
 Create an artifact for GriddingMachine, given
 - `config` the configuration dictionary
@@ -16,10 +16,10 @@ Create an artifact for GriddingMachine, given
 """
 function create_artifact! end;
 
-create_artifact!(config::Dict, year::Int) = (
-    gm_tag = griddingmachine_tag(config, year);
+create_artifact!(config::Dict, year::Union{Int,Nothing}) = (
+    gm_tag = isnothing(year) ? griddingmachine_tag(config) : griddingmachine_tag(config, year);
     src_gm_file = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", "GRIDDINGMACHINE");
-    src_nc_file = joinpath(config["FOLDER_REPROCESSED"], "$gm_tag.nc");
+    src_nc_file = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER_REPROCESSED"], "$gm_tag.nc");
     tmp_dir = mktempdir(joinpath(GRIDDING_MACHINE_HOME, "cache"));
     mkpath(tmp_dir);
 
@@ -35,7 +35,7 @@ create_artifact!(config::Dict, year::Int) = (
     mv(tmp_dir, artifact_dir; force = true);
 
     # package the artifact
-    tarball = joinpath(GRIDDING_MACHINE_HOME, "tarballs", config["TARBALL_FOLDER"], "$gm_tag.tar.gz");
+    tarball = joinpath(GRIDDING_MACHINE_HOME, "tarballs", config["FOLDER_TARBALL"], "$gm_tag.tar.gz");
     package(artifact_dir, tarball);
 
     return nothing
