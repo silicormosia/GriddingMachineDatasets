@@ -5,6 +5,11 @@ function verify_data(
             data_path::String = "/home/wyujie/GriddingMachine/cache/test.nc",
             python::String = "/net/fluo/data2/software/Anaconda/anaconda3/bin/python",
             script::String = "/home/wyujie/Github/Julia/GriddingMachineDatasets/src/python/verify-data.py")
+    # if VERIFY_ONCE is true and the data has been verified, return true
+    if haskey(dict, "VERIFY_ONCE") && dict["VERIFY_ONCE"] && haskey(dict, "VERIFIED") && dict["VERIFIED"]
+        return true
+    end;
+
     # save data to a local file path
     save_nc!(data_path, "test", data, Dict{String,String}("about" => "test data"));
 
@@ -21,5 +26,8 @@ function verify_data(
     print("Please verify the data in the plot. Type 'Y/y' to continue, otherweise to stop > ");
     response = readline();
 
-    return lowercase(response) == "y"
+    # add a new key "VERIFIED" to the dict
+    dict["VERIFIED"] = lowercase(response) == "y";
+
+    return Bool(dict["VERIFIED"])
 end;
