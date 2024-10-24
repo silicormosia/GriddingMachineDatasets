@@ -6,48 +6,39 @@
 #     2024-Oct-24: Add change logs when formatting the data based on the configuration
 #     2024-Oct-24: Copy CHANGE_LOGS to CHANGE_LOGS_TO_WRITE to avoid repeatly adding the same logs
 #     2024-Oct-24: Skip the process if the original file does not exist
+#     2024-Oct-24: Use loop file method to loop through all the different configurations
 #
 #######################################################################################################################################################################################################
 """
 
-    read_input(config::Dict, year::Int; data_or_std::String = "data")
-    read_input(config::Dict; data_or_std::String = "data")
+    read_input(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data")
 
 Read the input data and format it based on the configuration, given
 - `config` the configuration dictionary
-- `year` the year to read (only for duplicated tasks)
+- `prefix` the prefix of the file
+- `nx` the spatial resolution (number of grid points in one degree)
+- `mt` the time resolution
+- `vv` the version of the dataset
+- `yyyy` the year of the data (only for duplicated tasks)
 - `data_or_std` the type of data to read (either "data" or "std")
 
 """
 function read_input end;
 
-read_input(config::Dict, year::Int; data_or_std::String = "data") = (
+read_input(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data") = (
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std'";
 
-    # if the key exists, read the data from the FILE_NAME
+    # the index of prefix in the configuration
     if haskey(config, uppercase(data_or_std))
-        return read_input(original_folder_path(config), config["FILE_NAME"], config[uppercase(data_or_std)], year);
-    else
-        return nothing
+        dict_data = config[uppercase(data_or_std)];
+        idx = findfirst(x -> x == prefix, config["FILE"]["PREFIX"]);
+        return read_input(original_file_path(config, prefix, nx, mt, vv, yyyy), dict_data, dict_data["LABEL"][idx])
     end;
+
+    return nothing
 );
 
-read_input(config::Dict; data_or_std::String = "data") = (
-    @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std'";
-
-    # if the key exists, read the data from the FILE_NAME
-    if haskey(config, uppercase(data_or_std))
-        return read_input(original_folder_path(config), config["FILE_NAME"], config[uppercase(data_or_std)]);
-    else
-        return nothing
-    end;
-);
-
-read_input(folder::String, filename::String, dict::Dict, year::Int) = read_input(folder, replace(filename, "YYYY" => lpad(year, 4, "0")), dict);
-
-read_input(folder::String, filename::String, dict::Dict) = read_input(joinpath(folder, filename), dict);
-
-read_input(filepath::String, dict::Dict) = (
+read_input(filepath::String, dict::Dict, label::String) = (
     # make sure file exists; otherwise, return nothing
     if !isfile(filepath)
         @info "original file $filepath not found, skipping the process...";
@@ -56,7 +47,7 @@ read_input(filepath::String, dict::Dict) = (
     end;
 
     # read the data from the netCDF file
-    data = read_nc(filepath, dict["LABEL"]);
+    data = read_nc(filepath, label);
 
     # clear the change logs
     dict["CHANGE_LOGS_TO_WRITE"] = deepcopy(dict["CHANGE_LOGS"]);

@@ -5,6 +5,7 @@
 #     2024-Oct-24: Add pipeline function to process the entire dataset (read, verify, save)
 #     2024-Oct-24: Make sure the path exists before saving the reprocessed data
 #     2024-Oct-24: Skip the process if the reprocessed file exists
+#     2024-Oct-24: Use loop file method to loop through all the different configurations
 #
 #######################################################################################################################################################################################################
 """
@@ -23,42 +24,54 @@ process_dataset!(config::Dict) = (
     # make sure the path exists
     mkpath(reprocessed_folder_path(config));
 
-    # if the task is not a duplicate, process each year; otherwise, process the data
-    if !config["DUPLICATED_TASK"]
-        process_dataset!(config, nothing);
-    end;
+    # read the FILE configurations
+    dict_file = config["FILE"];
+    prefixs = dict_file["PREFIX"];
+    nxs = dict_file["NX"];
+    mts = dict_file["MT"];
+    vvs = dict_file["VV"];
+    yyyy = haskey(dict_file, "YYYY") ? dict_file["YYYY"] : nothing;
 
-    # if the task is a duplicated task, loop through the years
-    years = config["YEARS"];
-    for year in years
-        process_dataset!(config, year);
+    # loop through the files and process each file
+    for prefix in prefixs, nx in nxs, mt in mts, vv in vvs
+        if isnothing(yyyy)
+            process_dataset!(config, prefix, nx, mt, vv, nothing);
+        else
+            for year in yyyy
+                process_dataset!(config, prefix, nx, mt, vv, year);
+            end;
+        end;
     end;
 
     return nothing
 );
 
-process_dataset!(config::Dict, year::Union{Int,Nothing}) = (
+process_dataset!(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}) = (
     # make sure the output file does not exist. If exists, skip the process
-    output_file = reprocessed_file_path(config, year);
+    output_file = reprocessed_file_path(config, prefix, nx, mt, vv, yyyy);
+
     if isfile(output_file)
         return nothing
     end;
 
+    # show the progress
+    @info "Processing file $(output_file)";
+
     # read the data
-    data = isnothing(year) ? read_input(config; data_or_std = "data") : read_input(config, year; data_or_std = "data");
+    data = read_input(config, prefix, nx, mt, vv, yyyy; data_or_std = "data");
     if !isnothing(data)
         if verify_data(data, config["DATA"])
-            isnothing(year) ? save_input!(config, data) : save_input!(config, data, year);
+            save_input!(config, data, output_file; data_or_std = "data");
         else
             return error("Data verification failed, please check the data and configuration!");
         end;
     end;
 
     # read the std
-    std = isnothing(year) ? read_input(config; data_or_std = "std") : read_input(config, year; data_or_std = "std");
+    std = read_input(config, prefix, nx, mt, vv, yyyy; data_or_std = "std");
     if !isnothing(std)
         if verify_data(std, config["STD"])
-            isnothing(year) ? save_input!(config, std; data_or_std = "std") : save_input!(config, std, year; data_or_std = "std");
+            save_input!(config, data, output_file; data_or_std = "std");
         else
             return error("STD verification failed, please check the data and configuration!");
         end;

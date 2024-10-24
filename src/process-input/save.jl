@@ -9,27 +9,19 @@
 #######################################################################################################################################################################################################
 """
 
-    save_input!(config::Dict, data::Array, year::Int; data_or_std::String = "data")
-    save_input!(config::Dict, data::Array; data_or_std::String = "data")
+    save_input!(config::Dict, data::Array, filepath::String; data_or_std::String = "data")
 
 Save the input data to a netCDF file, given
 - `config` the configuration dictionary
 - `data` the data to save
-- `year` the year to save (only for duplicated tasks)
+- `filepath` the path to the netCDF file
 - `data_or_std` the type of data to save (either "data" or "std")
 
 """
-function save_input end;
-
-save_input!(config::Dict, data::Array, year::Int; data_or_std::String = "data") = save_input!(config, data, griddingmachine_tag(config, year), data_or_std);
-
-save_input!(config::Dict, data::Array; data_or_std::String = "data") = save_input!(config, data, griddingmachine_tag(config), data_or_std);
-
-save_input!(config::Dict, data::Array, gm_tag::String, data_or_std::String) = (
+function save_input!(config::Dict, data::Array, filepath::String; data_or_std::String = "data")
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
 
     # save the data to a netcdf file
-    filepath = joinpath(reprocessed_folder_path(config), "$gm_tag.nc");
     data_attributes = Dict{String,String}(
                 "about" => config[uppercase(data_or_std)]["ABOUT"],
                 "unit"  => config[uppercase(data_or_std)]["UNIT"],
@@ -48,4 +40,4 @@ save_input!(config::Dict, data::Array, gm_tag::String, data_or_std::String) = (
     end;
 
     return nothing
-);
+end;

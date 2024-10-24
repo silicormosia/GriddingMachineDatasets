@@ -7,8 +7,8 @@
 #######################################################################################################################################################################################################
 """
 
-    griddingmachine_tag(config::Dict, year::Int)
-    griddingmachine_tag(config::Dict)
+    griddingmachine_tag(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Int)
+    griddingmachine_tag(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Nothing)
 
 Generate the GriddingMachine tag, given
 - `config` the configuration dictionary
@@ -17,32 +17,37 @@ Generate the GriddingMachine tag, given
 """
 function griddingmachine_tag end;
 
-griddingmachine_tag(config::Dict, year::Int) = (
-    tag = config["TAG"];
-    reso_s = config["RESOLUTION_SPATIAL"];
-    reso_t = config["RESOLUTION_TEMPORAL"];
-    version = config["VERSION"];
+griddingmachine_tag(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Int) = (
+    tag = config["GRIDDINGMACHINE"]["TAG"];
 
-    return "$(tag)_$(reso_s)X_$(reso_t)_$(year)_V$(version)"
+    if tag == ""
+        return "$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
+    else
+        return "$(tag)_$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
+    end;
 );
 
-griddingmachine_tag(config::Dict) = (
-    tag = config["TAG"];
-    reso_s = config["RESOLUTION_SPATIAL"];
-    reso_t = config["RESOLUTION_TEMPORAL"];
-    version = config["VERSION"];
+griddingmachine_tag(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Nothing) = (
+    tag = config["GRIDDINGMACHINE"]["TAG"];
 
-    return "$(tag)_$(reso_s)X_$(reso_t)_V$(version)"
+    if tag == ""
+        return "$(prefix)_$(nx)X_$(mt)_$(vv)"
+    else
+        return "$(tag)_$(prefix)_$(nx)X_$(mt)_$(vv)"
+    end;
 );
 
 
 # short cut functions
-original_folder_path(config::Dict) = joinpath(GRIDDING_MACHINE_HOME, "original", config["FOLDER_ORIGINAL"]);
+original_folder_path(config::Dict) = joinpath(GRIDDING_MACHINE_HOME, "original", config["FOLDER"]["ORIGINAL"]);
+reprocessed_folder_path(config::Dict) = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER"]["REPROCESSED"]);
+tarball_folder_path(config::Dict) = joinpath(GRIDDING_MACHINE_HOME, "tarballs", config["FOLDER"]["TARBALL"]);
 
-reprocessed_file_path(config::Dict, year::Int) = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER_REPROCESSED"], "$(griddingmachine_tag(config, year)).nc");
-reprocessed_file_path(config::Dict, year::Nothing) = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER_REPROCESSED"], "$(griddingmachine_tag(config)).nc");
-reprocessed_folder_path(config::Dict) = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER_REPROCESSED"]);
+original_file_path(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Int) = joinpath(original_folder_path(config), "$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv).nc");
+original_file_path(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Nothing) = joinpath(original_folder_path(config), "$(prefix)_$(nx)X_$(mt)_$(vv).nc");
 
-tarball_file_path(config::Dict, year::Int) = joinpath(GRIDDING_MACHINE_HOME, "tarballs", config["FOLDER_TARBALL"], "$(griddingmachine_tag(config, year)).tar.gz");
-tarball_file_path(config::Dict, year::Nothing) = joinpath(GRIDDING_MACHINE_HOME, "tarballs", config["FOLDER_TARBALL"], "$(griddingmachine_tag(config)).tar.gz");
-tarball_folder_path(config::Dict) = joinpath(GRIDDING_MACHINE_HOME, "tarballs", config["FOLDER_TARBALL"]);
+reprocessed_file_path(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}) =
+    joinpath(reprocessed_folder_path(config), "$(griddingmachine_tag(config, prefix, nx, mt, vv, yyyy)).nc");
+
+tarball_file_path(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}) =
+    joinpath(tarball_folder_path(config), "$(griddingmachine_tag(config, prefix, nx, mt, vv, yyyy)).tar.gz");

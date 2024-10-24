@@ -4,24 +4,27 @@
 # General
 #     2024-Oct-24: Add function to create an artifact for GriddingMachine
 #     2024-Oct-24: Skip the process if the reprocessed file does not exist or the tarball file exists
+#     2024-Oct-24: Use loop file method to loop through all the different configurations
 #
 #######################################################################################################################################################################################################
 """
 
-    create_artifact!(config::Dict, year::Union{Int,Nothing})
+    create_artifact!(config::Dict, prefix::String, nx::Int, mt::String, vv::String, year::Union{Int,Nothing})
 
 Create an artifact for GriddingMachine, given
 - `config` the configuration dictionary
-- `year` the year to create the artifact (only for duplicated tasks)
+- `prefix` the prefix of the file
+- `nx` the spatial resolution (number of grid points in one degree)
+- `mt` the time resolution
+- `vv` the version of the dataset
+- `year` the year of the data (only for duplicated tasks)
 
 """
-function create_artifact! end;
-
-create_artifact!(config::Dict, year::Union{Int,Nothing}) = (
-    gm_tag = isnothing(year) ? griddingmachine_tag(config) : griddingmachine_tag(config, year);
+function create_artifact!(config::Dict, prefix::String, nx::Int, mt::String, vv::String, year::Union{Int,Nothing})
+    gm_tag = griddingmachine_tag(config, prefix, nx, mt, vv, year);
     src_gm_file = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", "GRIDDINGMACHINE");
-    src_nc_file = reprocessed_file_path(config, year);
-    tarball_file = tarball_file_path(config, year);
+    src_nc_file = reprocessed_file_path(config, prefix, nx, mt, vv, year);
+    tarball_file = tarball_file_path(config, prefix, nx, mt, vv, year);
 
     # make sure the file exists; otherwise, return nothing
     if !isfile(src_nc_file)
@@ -34,6 +37,9 @@ create_artifact!(config::Dict, year::Union{Int,Nothing}) = (
     if isfile(tarball_file)
         return nothing
     end;
+
+    # show the progress
+    @info "Creating artifact for $gm_tag...";
 
     # create a temporary folder
     tmp_dir = mktempdir(joinpath(GRIDDING_MACHINE_HOME, "cache"));
@@ -54,4 +60,4 @@ create_artifact!(config::Dict, year::Union{Int,Nothing}) = (
     package(artifact_dir, tarball_file);
 
     return nothing
-);
+end;
