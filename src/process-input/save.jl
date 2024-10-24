@@ -21,37 +21,9 @@ Save the input data to a netCDF file, given
 """
 function save_input end;
 
-save_input!(config::Dict, data::Array, year::Int; data_or_std::String = "data") = (
-    @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
+save_input!(config::Dict, data::Array, year::Int; data_or_std::String = "data") = save_input!(config, data, griddingmachine_tag(config, year), data_or_std);
 
-    # determine the file to save (TAG of GriddingMachine)
-    tag = config["TAG"];
-    reso_s = config["RESOLUTION_SPATIAL"];
-    reso_t = config["RESOLUTION_TEMPORAL"];
-    version = config["VERSION"];
-    gm_tag = "$(tag)_$(reso_s)X_$(reso_t)_$(year)_V$(version)";
-
-    # save the data to a netcdf file
-    save_input!(config, data, gm_tag, data_or_std);
-
-    return nothing
-);
-
-save_input!(config::Dict, data::Array; data_or_std::String = "data") = (
-    @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
-
-    # determine the file to save (TAG of GriddingMachine)
-    tag = config["TAG"];
-    reso_s = config["RESOLUTION_SPATIAL"];
-    reso_t = config["RESOLUTION_TEMPORAL"];
-    version = config["VERSION"];
-    gm_tag = "$(tag)_$(reso_s)X_$(reso_t)_V$(version)";
-
-    # save the data to a netcdf file
-    save_input!(config, data, gm_tag, data_or_std);
-
-    return nothing
-);
+save_input!(config::Dict, data::Array; data_or_std::String = "data") = save_input!(config, data, griddingmachine_tag(config), data_or_std);
 
 save_input!(config::Dict, data::Array, gm_tag::String, data_or_std::String) = (
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
