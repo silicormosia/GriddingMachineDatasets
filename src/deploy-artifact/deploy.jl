@@ -4,6 +4,7 @@
 # General
 #     2024-Oct-24: Add pipeline function to deploy the datasets
 #     2024-Oct-24: Use loop file method to loop through all the different configurations
+#     2024-Oct-25: Save a dict of FOLDER and SHA per artifact in the database
 #
 #######################################################################################################################################################################################################
 """
@@ -45,7 +46,7 @@ deploy_datasets!(config::OrderedDict) = (
             art = create_artifact!(config, prefix, nx, mt, vv, nothing);
             if !isnothing(art)
                 database_changed = true;
-                push!(database, art[1] => art[2]);
+                push!(database, art[1] => OrderedDict{String,Any}("FOLDER" => config["FOLDER"]["TARBALL"], "SHA" => art[2]));
                 push!(existing_artifacts, art[1]);
             end;
         else
@@ -53,7 +54,7 @@ deploy_datasets!(config::OrderedDict) = (
                 art = create_artifact!(config, prefix, nx, mt, vv, year);
                 if !isnothing(art)
                     database_changed = true;
-                    push!(database, art[1] => art[2]);
+                    push!(database, art[1] => OrderedDict{String,Any}("FOLDER" => config["FOLDER"]["TARBALL"], "SHA" => art[2]));
                     push!(existing_artifacts, art[1]);
                 end;
             end;
