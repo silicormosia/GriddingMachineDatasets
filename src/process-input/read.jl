@@ -11,7 +11,7 @@
 #######################################################################################################################################################################################################
 """
 
-    read_input(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data")
+    read_input(config::OrderedDict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data")
 
 Read the input data and format it based on the configuration, given
 - `config` the configuration dictionary
@@ -25,7 +25,7 @@ Read the input data and format it based on the configuration, given
 """
 function read_input end;
 
-read_input(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data") = (
+read_input(config::OrderedDict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data") = (
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std'";
 
     # the index of prefix in the configuration
@@ -38,7 +38,7 @@ read_input(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::
     return nothing
 );
 
-read_input(filepath::String, dict::Dict, label::String) = (
+read_input(filepath::String, dict::OrderedDict, label::String) = (
     # make sure file exists; otherwise, return nothing
     if !isfile(filepath)
         @info "original file $filepath not found, skipping the process...";

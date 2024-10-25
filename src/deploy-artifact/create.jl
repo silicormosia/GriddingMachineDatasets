@@ -9,7 +9,7 @@
 #######################################################################################################################################################################################################
 """
 
-    create_artifact!(config::Dict, prefix::String, nx::Int, mt::String, vv::String, year::Union{Int,Nothing})
+    create_artifact!(config::OrderedDict, prefix::String, nx::Int, mt::String, vv::String, year::Union{Int,Nothing})
 
 Create an artifact for GriddingMachine, given
 - `config` the configuration dictionary
@@ -20,11 +20,17 @@ Create an artifact for GriddingMachine, given
 - `year` the year of the data (only for duplicated tasks)
 
 """
-function create_artifact!(config::Dict, prefix::String, nx::Int, mt::String, vv::String, year::Union{Int,Nothing})
+function create_artifact!(config::OrderedDict, prefix::String, nx::Int, mt::String, vv::String, year::Union{Int,Nothing}; database::Vector = [])
+    # the tag and file paths
     gm_tag = griddingmachine_tag(config, prefix, nx, mt, vv, year);
     src_gm_file = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", "GRIDDINGMACHINE");
     src_nc_file = reprocessed_file_path(config, prefix, nx, mt, vv, year);
     tarball_file = tarball_file_path(config, prefix, nx, mt, vv, year);
+
+    # if gm_tag is already in the database, skip the process
+    if gm_tag in database
+        return nothing
+    end;
 
     # make sure the file exists; otherwise, return nothing
     if !isfile(src_nc_file)
@@ -53,11 +59,12 @@ function create_artifact!(config::Dict, prefix::String, nx::Int, mt::String, vv:
 
     # compute the hash of the tmp_dir folder and rename it
     artifact_hash = Base.SHA1(tree_hash(tmp_dir));
-    artifact_dir = joinpath(GRIDDING_MACHINE_HOME, "public", bytes2hex(artifact_hash.bytes));
+    artifact_hash_str = bytes2hex(artifact_hash.bytes);
+    artifact_dir = joinpath(GRIDDING_MACHINE_HOME, "public", artifact_hash_str);
     mv(tmp_dir, artifact_dir; force = true);
 
     # package the artifact
     package(artifact_dir, tarball_file);
 
-    return nothing
+    return gm_tag, artifact_hash_str
 end;

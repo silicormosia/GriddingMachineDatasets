@@ -9,7 +9,7 @@
 #######################################################################################################################################################################################################
 """
 
-    save_input!(config::Dict, data::Array, filepath::String; data_or_std::String = "data")
+    save_input!(config::OrderedDict, data::Array, filepath::String; data_or_std::String = "data")
 
 Save the input data to a netCDF file, given
 - `config` the configuration dictionary
@@ -18,7 +18,7 @@ Save the input data to a netCDF file, given
 - `data_or_std` the type of data to save (either "data" or "std")
 
 """
-function save_input!(config::Dict, data::Array, filepath::String; data_or_std::String = "data")
+function save_input!(config::OrderedDict, data::Array, filepath::String; data_or_std::String = "data")
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
 
     # save the data to a netcdf file

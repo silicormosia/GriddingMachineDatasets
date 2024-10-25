@@ -20,7 +20,7 @@ function process_dataset! end;
 
 process_dataset!(yaml_file::String) = process_dataset!(read_yaml(yaml_file));
 
-process_dataset!(config::Dict) = (
+process_dataset!(config::OrderedDict) = (
     # make sure the path exists
     mkpath(reprocessed_folder_path(config));
 
@@ -46,7 +46,7 @@ process_dataset!(config::Dict) = (
     return nothing
 );
 
-process_dataset!(config::Dict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}) = (
+process_dataset!(config::OrderedDict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}) = (
     # make sure the output file does not exist. If exists, skip the process
     output_file = reprocessed_file_path(config, prefix, nx, mt, vv, yyyy);
 

@@ -9,7 +9,7 @@
 """
 
     verify_data(data::Array,
-                dict::Dict;
+                dict::OrderedDict;
                 data_path::String = "/home/wyujie/GriddingMachine/cache/test.nc",
                 python::String = "/net/fluo/data2/software/Anaconda/anaconda3/bin/python",
                 script::String = "/home/wyujie/Github/Julia/GriddingMachineDatasets/src/python/verify-data.py")
@@ -24,7 +24,7 @@ Verify the data by plotting it and asking the user to verify it, given
 """
 function verify_data(
             data::Array,
-            dict::Dict;
+            dict::OrderedDict;
             data_path::String = "/home/wyujie/GriddingMachine/cache/test.nc",
             python::String = "/net/fluo/data2/software/Anaconda/anaconda3/bin/python",
             script::String = "/home/wyujie/Github/Julia/GriddingMachineDatasets/src/python/verify-data.py")

@@ -18,7 +18,15 @@ function deploy_datasets! end;
 
 deploy_datasets!(yaml_file::String) = deploy_datasets!(read_yaml(yaml_file));
 
-deploy_datasets!(config::Dict) = (
+deploy_datasets!(config::OrderedDict) = (
+    # load the Artifacts.yaml file
+    database_file = joinpath(@__DIR__, "../../Artifacts.yaml");
+    database = read_yaml(database_file);
+    if isnothing(database)
+        database = OrderedDict{String,Any}();
+    end;
+    existing_artifacts = [k for k in keys(database)];
+
     # make the path exists
     mkpath(joinpath(GRIDDING_MACHINE_HOME, "tarballs", config["FOLDER"]["TARBALL"]));
 
@@ -31,14 +39,32 @@ deploy_datasets!(config::Dict) = (
     yyyy = haskey(dict_file, "YYYY") ? dict_file["YYYY"] : nothing;
 
     # loop through the files and process each file
+    database_changed = false;
     for prefix in prefixs, nx in nxs, mt in mts, vv in vvs
         if isnothing(yyyy)
-            create_artifact!(config, prefix, nx, mt, vv, nothing);
+            art = create_artifact!(config, prefix, nx, mt, vv, nothing);
+            if !isnothing(art)
+                database_changed = true;
+                push!(database, art[1] => art[2]);
+                push!(existing_artifacts, art[1]);
+            end;
         else
             for year in yyyy
-                create_artifact!(config, prefix, nx, mt, vv, year);
+                art = create_artifact!(config, prefix, nx, mt, vv, year);
+                if !isnothing(art)
+                    database_changed = true;
+                    push!(database, art[1] => art[2]);
+                    push!(existing_artifacts, art[1]);
+                end;
             end;
         end;
+    end;
+
+    # write the database back to the Artifacts.yaml file
+    #database_changed ? save_yaml!(database_file, database) : nothing;
+    if database_changed
+        sort!(database);
+        save_yaml!(database_file, database);
     end;
 
     return nothing
