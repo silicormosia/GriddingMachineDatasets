@@ -62,10 +62,13 @@ deploy_datasets!(config::OrderedDict) = (
     end;
 
     # write the database back to the Artifacts.yaml file
-    #database_changed ? save_yaml!(database_file, database) : nothing;
     if database_changed
+        # sort the database and save it
         sort!(database);
         save_yaml!(database_file, database);
+
+        # copy the database to the Server folder
+        cp(database_file, joinpath(GRIDDING_MACHINE_HOME, "Artifacts.yaml"));
     end;
 
     return nothing
