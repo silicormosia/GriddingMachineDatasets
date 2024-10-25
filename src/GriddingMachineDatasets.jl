@@ -13,6 +13,7 @@ using ArchGDAL: getband, read
 using OrderedCollections: OrderedDict
 using Pkg.GitTools: tree_hash
 using Pkg.PlatformEngines: package
+using TOML: parsefile
 using YAML: load_file, write_file
 
 using NetcdfIO: append_nc!, read_nc, save_nc!
@@ -22,7 +23,8 @@ using NetcdfIO: append_nc!, read_nc, save_nc!
 GRIDDING_MACHINE_HOME = joinpath(homedir(), "GriddingMachine");
 
 
-include("yaml/yaml.jl");
+include("database/toml.jl");
+include("database/yaml.jl");
 
 include("prepare-input/read-geotiff.jl");
 
