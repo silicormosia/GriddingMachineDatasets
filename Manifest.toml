@@ -2,7 +2,7 @@
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "1b71808d020b43de699dae9d2d0b437ac463cfd4"
+project_hash = "c15e75d6a8b465ba7802812ed8ef41e8b00dfa18"
 
 [[deps.ArchGDAL]]
 deps = ["CEnum", "ColorTypes", "Dates", "DiskArrays", "Extents", "GDAL", "GeoFormatTypes", "GeoInterface", "GeoInterfaceMakie", "GeoInterfaceRecipes", "ImageCore", "Tables"]

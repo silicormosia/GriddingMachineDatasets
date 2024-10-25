@@ -3,4 +3,5 @@
 *.yaml
 
 # exceptions
+!Artifacts.yaml
 !yaml/*.yaml
