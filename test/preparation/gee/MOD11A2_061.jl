@@ -23,9 +23,10 @@ ind_dim(mt::String) = (
 
 
 # 1. function to process the bands, months, and years
-function combine_bands(y::Int, nx::Int, mt::String)
+function combine_bands(y::Int, nx::Int, mt::String, prefix::String)
     # path to file
-    filepath = "$(INPUT_FOLDER)/$(y)_$(nx)X_$(mt).tif";
+    filename = prefix == "" ? "$(y)_$(nx)X_$(mt).tif" : "$(prefix)_$(y)_$(nx)X_$(mt).tif";
+    filepath = "$(INPUT_FOLDER)/$(filename)";
     bands = collect(1:ind_dim(mt));
 
     # first index is 2 when y == 2000 and mt == 1M (because MODIS started collecting data since 2000-Feb)
@@ -62,14 +63,16 @@ end;
 for y in 2000:2024
     for nx in [1]
         for mt in ["8D", "1M"]
-            in_file = "$(INPUT_FOLDER)/$(y)_$(nx)X_$(mt).tif";
-            out_file = "$(OUTPUT_FOLDER)/LST_$(nx)X_$(mt)_$(y)_V1.nc";
-            # if input file exists and output file does not
-            if isfile(in_file) && !isfile(out_file)
-                data = combine_bands(y, nx, mt);
-                NC.create_nc!(out_file, ["lon", "lat", "ind"], [lon_dim(nx), lat_dim(nx), ind_dim(mt)]);
-                NC.append_nc!(out_file, "LST", data, Dict{String,String}("about" => "Land skin temperature"), ["lon", "lat", "ind"]);
-                @info "Finished processing file $(out_file)";
+            for dn in ["Day", "Night"]
+                in_file = "$(INPUT_FOLDER)/$(dn)_$(y)_$(nx)X_$(mt).tif";
+                out_file = "$(OUTPUT_FOLDER)/$(dn)_$(nx)X_$(mt)_$(y)_V1.nc";
+                # if input file exists and output file does not
+                if isfile(in_file) && !isfile(out_file)
+                    data = combine_bands(y, nx, mt, dn);
+                    NC.create_nc!(out_file, ["lon", "lat", "ind"], [lon_dim(nx), lat_dim(nx), ind_dim(mt)]);
+                    NC.append_nc!(out_file, "LST", data, Dict{String,String}("about" => "Land skin temperature"), ["lon", "lat", "ind"]);
+                    @info "Finished processing file $(out_file)";
+                end;
             end;
         end;
     end;

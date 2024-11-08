@@ -22,11 +22,11 @@ griddingmachine_tag(config::OrderedDict, prefix::String, nx::Int, mt::String, vv
     tag = config["GRIDDINGMACHINE"]["TAG"];
 
     if tag == ""
-        return "$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
+        return uppercase("$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)")
     elseif occursin(prefix, tag)
-        return "$(tag)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
+        return uppercase("$(tag)_$(nx)X_$(mt)_$(yyyy)_$(vv)")
     else
-        return "$(tag)_$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
+        return uppercase("$(tag)_$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)")
     end;
 );
 
@@ -34,11 +34,11 @@ griddingmachine_tag(config::OrderedDict, prefix::String, nx::Int, mt::String, vv
     tag = config["GRIDDINGMACHINE"]["TAG"];
 
     if tag == ""
-        return "$(prefix)_$(nx)X_$(mt)_$(vv)"
+        return uppercase("$(prefix)_$(nx)X_$(mt)_$(vv)")
     elseif occursin(prefix, tag)
-        return "$(tag)_$(nx)X_$(mt)_$(vv)"
+        return uppercase("$(tag)_$(nx)X_$(mt)_$(vv)")
     else
-        return "$(tag)_$(prefix)_$(nx)X_$(mt)_$(vv)"
+        return uppercase("$(tag)_$(prefix)_$(nx)X_$(mt)_$(vv)")
     end;
 );
 
