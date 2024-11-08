@@ -26,7 +26,7 @@ DATA:
   ABOUT          : "Land skin temperature"
   CHANGE_LOGS    : ["Converted to NetCDF format"]
   LABEL          : ["LST"]
-  LIMITS         : [170, 370]
+  LIMITS         : [170, 400]
   REV_LAT        : True
   SCALING        : "linear"
   SCALING_FACTOR : [0.02, 0]

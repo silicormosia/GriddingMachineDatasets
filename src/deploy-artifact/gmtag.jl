@@ -3,6 +3,7 @@
 # Changes to the function
 # General
 #     2024-Oct-24: Add function to generate the GriddingMachine tag
+#     2024-Nov-08: Add option to deal with the case that predfix is already in the tag
 #
 #######################################################################################################################################################################################################
 """
@@ -22,6 +23,8 @@ griddingmachine_tag(config::OrderedDict, prefix::String, nx::Int, mt::String, vv
 
     if tag == ""
         return "$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
+    elseif occursin(prefix, tag)
+        return "$(tag)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
     else
         return "$(tag)_$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)"
     end;
@@ -32,6 +35,8 @@ griddingmachine_tag(config::OrderedDict, prefix::String, nx::Int, mt::String, vv
 
     if tag == ""
         return "$(prefix)_$(nx)X_$(mt)_$(vv)"
+    elseif occursin(prefix, tag)
+        return "$(tag)_$(nx)X_$(mt)_$(vv)"
     else
         return "$(tag)_$(prefix)_$(nx)X_$(mt)_$(vv)"
     end;
