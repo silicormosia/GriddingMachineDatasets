@@ -68,7 +68,7 @@ deploy_datasets!(config::OrderedDict) = (
         save_yaml!(database_file, database);
 
         # copy the database to the Server folder
-        cp(database_file, joinpath(GRIDDING_MACHINE_HOME, "Artifacts.yaml"));
+        cp(database_file, joinpath(GRIDDING_MACHINE_HOME, "Artifacts.yaml"); force = true);
     end;
 
     return nothing
