@@ -7,6 +7,7 @@
 #     2024-Oct-24: Copy CHANGE_LOGS to CHANGE_LOGS_TO_WRITE to avoid repeatly adding the same logs
 #     2024-Oct-24: Skip the process if the original file does not exist
 #     2024-Oct-24: Use loop file method to loop through all the different configurations
+#     2024-Dec-03: Add support to FLIP_LON to flip the longitude from 0 to 360 to -180 to 180
 #
 #######################################################################################################################################################################################################
 """
@@ -68,21 +69,33 @@ read_input(filepath::String, dict::OrderedDict, label::String) = (
         data_a
     end;
 
-    # if key SCALING exists, scale the data
-    data_c = if haskey(dict, "SCALING") && lowercase(dict["SCALING"]) == "linear"
-        push!(dict["CHANGE_LOGS_TO_WRITE"], "Data has been scaled linearly.");
-        FT = eltype(data_b);
-        data_b .* FT(dict["SCALING_FACTOR"][1]) .+ FT(dict["SCALING_FACTOR"][2])
+    # if key FLIP_LON exists, flip the longitude from 0 to 360 to -180 to 180
+    data_c = if haskey(dict, "FLIP_LON") && dict["FLIP_LON"]
+        push!(dict["CHANGE_LOGS_TO_WRITE"], "Longitude has been remapped from 0 to 360 to -180 to 180.");
+        nlon = size(data_b, 1);
+        ndim = ndims(data_b);
+        left_part = ndim == 2 ? data_b[1:nlon÷2,:] : data_b[1:nlon÷2,:,:];
+        right_part = ndim == 2 ? data_b[nlon÷2+1:end,:] : data_b[nlon÷2+1:end,:,:];
+        vcat(right_part, left_part)
     else
         data_b
+    end;
+
+    # if key SCALING exists, scale the data
+    data_d = if haskey(dict, "SCALING") && lowercase(dict["SCALING"]) == "linear"
+        push!(dict["CHANGE_LOGS_TO_WRITE"], "Data has been scaled linearly.");
+        FT = eltype(data_c);
+        data_c .* FT(dict["SCALING_FACTOR"][1]) .+ FT(dict["SCALING_FACTOR"][2])
+    else
+        data_c
     end;
 
     # if key LIMITS exists, limit the data
     if haskey(dict, "LIMITS")
         push!(dict["CHANGE_LOGS_TO_WRITE"], "Data has been limited within $(dict["LIMITS"][1]) and $(dict["LIMITS"][2]).");
-        mask = data_c .< dict["LIMITS"][1] .|| data_c .> dict["LIMITS"][2];
-        data_c[mask] .= NaN;
+        mask = data_d .< dict["LIMITS"][1] .|| data_d .> dict["LIMITS"][2];
+        data_d[mask] .= NaN;
     end;
 
-    return data_c
+    return data_d
 );

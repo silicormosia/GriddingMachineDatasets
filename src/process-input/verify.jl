@@ -42,7 +42,7 @@ function verify_data(
         vmax = dict["LIMITS"][2];
         run(`$python $script $data_path test $vmin $vmax`);
     else
-        run(`$python $script $data_path`);
+        run(`$python $script $data_path test`);
     end;
 
     # ask user to verify the data
