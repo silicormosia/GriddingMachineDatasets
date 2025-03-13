@@ -49,6 +49,7 @@ read_input(filepath::String, dict::OrderedDict, label::String) = (
 
     # read the data from the netCDF file
     data = read_nc(filepath, label);
+    ndim = ndims(data);
 
     # clear the change logs
     dict["CHANGE_LOGS_TO_WRITE"] = deepcopy(dict["CHANGE_LOGS"]);
@@ -56,7 +57,7 @@ read_input(filepath::String, dict::OrderedDict, label::String) = (
     # if key REV_LAT exists, reverse the latitude
     data_a = if haskey(dict, "REV_LAT") && dict["REV_LAT"]
         push!(dict["CHANGE_LOGS_TO_WRITE"], "Latitude has been remapped from -90 to 90.");
-        data[:,end:-1:1,:]
+        ndim == 2 ? data[:,end:-1:1] : data[:,end:-1:1,:]
     else
         data
     end;
@@ -64,7 +65,7 @@ read_input(filepath::String, dict::OrderedDict, label::String) = (
     # if key REV_LON exists, reverse the longitude
     data_b = if haskey(dict, "REV_LON") && dict["REV_LON"]
         push!(dict["CHANGE_LOGS_TO_WRITE"], "Longitude has been remapped from west to east.");
-        data_a[end:-1:1,:,:]
+        ndim == 2 ? data_a[end:-1:1,:] : data_a[end:-1:1,:,:]
     else
         data_a
     end;
@@ -73,7 +74,6 @@ read_input(filepath::String, dict::OrderedDict, label::String) = (
     data_c = if haskey(dict, "FLIP_LON") && dict["FLIP_LON"]
         push!(dict["CHANGE_LOGS_TO_WRITE"], "Longitude has been remapped from 0 to 360 to -180 to 180.");
         nlon = size(data_b, 1);
-        ndim = ndims(data_b);
         left_part = ndim == 2 ? data_b[1:nlon÷2,:] : data_b[1:nlon÷2,:,:];
         right_part = ndim == 2 ? data_b[nlon÷2+1:end,:] : data_b[nlon÷2+1:end,:,:];
         vcat(right_part, left_part)

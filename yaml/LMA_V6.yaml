@@ -1,0 +1,35 @@
+# File name patterns
+# Note that if YYYY does not exist, then it is not a duplicated task
+# These keys are mandatory:
+#     - PATTERN
+#     - PREFIX
+#     - NX
+#     - MT
+#     - VV
+FILE:
+  PATTERN : "PREFIX_NX_MT_VV.nc"
+  PREFIX  : ["LMA"]
+  NX      : [2]
+  MT      : ["1Y"]
+  VV      : ["V6"]
+
+# Folder structure for input and output
+FOLDER:
+  ORIGINAL    : "LMA"
+  REPROCESSED : "LMA"
+  TARBALL     : "LMA"
+
+# Data configuration
+# Note that the labels should match the PREFIX in FILE section
+DATA:
+  ABOUT          : "LMA from Vallicrosa et al. (2018) (https://doi.org/10.1111/nph.17771)"
+  CHANGE_LOGS    : ["Extracted from Dong et al. (2022) (DOI: 10.1111/geb.13680)"]
+  LABEL          : ["LMA"]
+  LIMITS         : [0, 1]
+  REV_LAT        : True
+  UNIT           : "kg m⁻²"
+  VERIFY_ONCE    : True
+
+# GriddingMachine configuration
+GRIDDINGMACHINE:
+  TAG : LMA
