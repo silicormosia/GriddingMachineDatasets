@@ -44,6 +44,8 @@ if len(sys.argv) == 5:
 dset = NC.Dataset(fname)
 data = dset.variables[label][:]
 dset.close()
+total_lon = max(data.shape)
+nx = int(total_lon / 360)
 
 
 # 6. print the shape of the data
@@ -52,9 +54,9 @@ if len(data.shape) == 2:
     print("    PythonVisualization: 2D PNG will be plotted as is!")
     PLT.figure(1, figsize=(13,6), dpi=300)
     if vmin is not None and vmax is not None:
-        cm = PLT.imshow(data, origin="lower", vmin=vmin, vmax=vmax)
+        cm = PLT.imshow(data[::nx,::nx], origin="lower", vmin=vmin, vmax=vmax)
     else:
-        cm = PLT.imshow(data, origin="lower")
+        cm = PLT.imshow(data[::nx,::nx], origin="lower")
     PLT.colorbar(cm)
     PLT.savefig("orientation.png")
     print("    PythonVisualization: Orientation image saved as orientation.png")
@@ -62,9 +64,9 @@ elif len(data.shape) == 3:
     def animate(i):
         PLT.clf()
         if vmin is not None and vmax is not None:
-            cm = PLT.imshow(data[i,:,:], origin="lower", vmin=vmin, vmax=vmax)
+            cm = PLT.imshow(data[i,::nx,::nx], origin="lower", vmin=vmin, vmax=vmax)
         else:
-            cm = PLT.imshow(data[i,:,:], origin="lower")
+            cm = PLT.imshow(data[i,::nx,::nx], origin="lower")
         PLT.colorbar(cm)
         PLT.title("Frame: " + str(i))
         return cm
