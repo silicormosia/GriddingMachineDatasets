@@ -1,4 +1,4 @@
-# This script is meant to process the CERES data copied from CliMA
+# This script is meant to process the CERES data
 import NetcdfIO as NC
 
 
