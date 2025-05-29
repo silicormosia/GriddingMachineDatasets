@@ -22,7 +22,7 @@ FOLDER:
 # Data configuration
 # Note that the labels should match the PREFIX in FILE section
 DATA:
-  ABOUT          : "LMA from Vallicrosa et al. (2018) (https://doi.org/10.1111/nph.17771)"
+  ABOUT          : "LMA from Vallicrosa et al. (2021) (https://doi.org/10.1111/nph.17771)"
   CHANGE_LOGS    : ["Extracted from Dong et al. (2022) (DOI: 10.1111/geb.13680)"]
   LABEL          : ["LMA"]
   LIMITS         : [0, 1]
