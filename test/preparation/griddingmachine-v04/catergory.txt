@@ -1,0 +1,33 @@
+BIOMASS: 0                                  OK
+CHL: nanmean                                OK              TODO
+CH: 0.05                                    OK              TODO
+CI: 0                                       OK              TODO
+CLOUD_FRACTION: nothing should be nan       land + ocean
+ELEV: no land should be nan
+GPP: 0                                      OK
+LAI: 0                                      OK              TODO
+LDMC: 0                                     OK
+LE: 0                                       OK
+LMA: nanmean                                OK              TODO
+LM: keep as it is!
+LNC: 0                                      OK
+LPC: 0                                      OK
+LST: no land should be nan
+PFT: no land should be nan                  OK              TODO
+REFLECTANCE: no land should be nan
+SA: nothing should be nan                   land + ocean
+SC_2X_1Y_V1: should be int (1)              OK
+SIF: 0                                      OK
+SIL: 0                                      OK
+SLA: nanmean                                OK              TODO
+SOIL_KSAT: no land should be nan (neanmean) OK              TODO
+SOIL_SWCR: no land should be nan (neanmean) OK              TODO
+SOIL_SWCS: no land should be nan (neanmean) OK              TODO
+SOIL_TEXTURE_1X_1Y_V1: TBD
+SOIL_TEXTURE_4X_1Y_V1:
+SOIL_VGA: no land should be nan (neanmean)  OK              TODO
+SOIL_VGN: no land should be nan (neanmean)  OK              TODO
+TD: 0                                       OK
+VCF: 0                                      OK              TODO
+VCMAX: nanmean                              OK              TODO
+WD: 0                                       OK
