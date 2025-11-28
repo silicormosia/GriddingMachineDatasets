@@ -17,12 +17,12 @@ Deploy the datasets for GriddingMachine, given
 """
 function deploy_datasets! end;
 
-deploy_datasets!(yaml_file::String) = deploy_datasets!(read_yaml(yaml_file));
+deploy_datasets!(yaml_file::String) = deploy_datasets!(read_library(yaml_file));
 
-deploy_datasets!(config::OrderedDict) = (
+deploy_datasets!(config::Union{Dict, OrderedDict}) = (
     # load the Artifacts.yaml file
     database_file = joinpath(@__DIR__, "../../Artifacts.yaml");
-    database = read_yaml(database_file);
+    database = read_library(database_file);
     if isnothing(database)
         database = OrderedDict{String,Any}();
     end;
@@ -65,7 +65,7 @@ deploy_datasets!(config::OrderedDict) = (
     if database_changed
         # sort the database and save it
         sort!(database);
-        save_yaml!(database_file, database);
+        save_library!(database_file, database);
 
         # copy the database to the Server folder
         cp(database_file, joinpath(GRIDDING_MACHINE_HOME, "Artifacts.yaml"); force = true);

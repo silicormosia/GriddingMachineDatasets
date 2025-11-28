@@ -1,54 +1,33 @@
-#######################################################################################################################################################################################################
-#
-# Changes to the function
-# General
-#     2024-Oct-23: Add function to read the input files (netCDF format)
-#     2024-Oct-24: Add change logs when formatting the data based on the configuration
-#     2024-Oct-24: Copy CHANGE_LOGS to CHANGE_LOGS_TO_WRITE to avoid repeatly adding the same logs
-#     2024-Oct-24: Skip the process if the original file does not exist
-#     2024-Oct-24: Use loop file method to loop through all the different configurations
-#     2024-Dec-03: Add support to FLIP_LON to flip the longitude from 0 to 360 to -180 to 180
-#
-#######################################################################################################################################################################################################
 """
 
-    read_input(config::OrderedDict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data")
+    read_input(filepath::String, varname::String, dict::Union{Dict, OrderedDict})
 
-Read the input data and format it based on the configuration, given
-- `config` the configuration dictionary
-- `prefix` the prefix of the file
-- `nx` the spatial resolution (number of grid points in one degree)
-- `mt` the time resolution
-- `vv` the version of the dataset
-- `yyyy` the year of the data (only for duplicated tasks)
-- `data_or_std` the type of data to read (either "data" or "std")
+Read the input data, and pre-process it according to the specifications in `dict`, given
+- `filepath`: the path to the netCDF file
+- `varname`: the variable name in the netCDF file
+- `dict`: a dictionary containing pre-processing instructions
 
 """
 function read_input end;
 
-read_input(config::OrderedDict, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data") = (
+read_input(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}; data_or_std::String = "data") = (
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std'";
 
     # the index of prefix in the configuration
     if haskey(config, uppercase(data_or_std))
         dict_data = config[uppercase(data_or_std)];
         idx = findfirst(x -> x == prefix, config["FILE"]["PREFIX"]);
-        return read_input(original_file_path(config, prefix, nx, mt, vv, yyyy), dict_data, dict_data["LABEL"][idx])
+        return read_input(original_file(config, prefix, nx, mt, vv, yyyy), dict_data, dict_data["LABEL"][idx])
     end;
 
     return nothing
 );
 
-read_input(filepath::String, dict::OrderedDict, label::String) = (
-    # make sure file exists; otherwise, return nothing
-    if !isfile(filepath)
-        @info "original file $filepath not found, skipping the process...";
-
-        return nothing
-    end;
+read_input(filepath::String, varname::String, dict::Union{Dict, OrderedDict}) = (
+    @assert isfile(filepath) "original file $filepath not found...";
 
     # read the data from the netCDF file
-    data = read_nc(filepath, label);
+    data = read_nc(filepath, varname);
     ndim = ndims(data);
 
     # clear the change logs

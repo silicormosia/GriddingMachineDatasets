@@ -1,15 +1,6 @@
-#######################################################################################################################################################################################################
-#
-# Changes to the function
-# General
-#     2024-Oct-23: Add function to save the data to a netCDF file
-#     2024-Oct-24: Add change logs when saving the data based on the configuration
-#     2024-Oct-24: Add option data_or_std to save either data or std
-#
-#######################################################################################################################################################################################################
 """
 
-    save_input!(config::OrderedDict, data::Array, filepath::String; data_or_std::String = "data")
+    save_input!(config::Union{Dict, OrderedDict}, data::Array, filepath::String; data_or_std::String = "data")
 
 Save the input data to a netCDF file, given
 - `config` the configuration dictionary
@@ -18,7 +9,7 @@ Save the input data to a netCDF file, given
 - `data_or_std` the type of data to save (either "data" or "std")
 
 """
-function save_input!(config::OrderedDict, data::Array, filepath::String; data_or_std::String = "data")
+function save_input!(config::Union{Dict, OrderedDict}, data::Array, filepath::String; data_or_std::String = "data")
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
 
     # save the data to a netcdf file
