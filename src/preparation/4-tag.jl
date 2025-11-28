@@ -12,26 +12,34 @@ function griddingmachine_tag end;
 
 griddingmachine_tag(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::String, vv::String, yyyy::Int) = (
     tag = config["GRIDDINGMACHINE"]["TAG"];
+    rev_tag = haskey(config["GRIDDINGMACHINE"], "REVISION") ? config["GRIDDINGMACHINE"]["REVISION"] : "";
+    rev_naming = rev_tag == "" ? "" : "_$(rev_tag)";
 
-    if tag == ""
-        return uppercase("$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)")
+    gmtag = if tag == ""
+        uppercase("$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)$(rev_naming)")
     elseif occursin(prefix, tag)
-        return uppercase("$(tag)_$(nx)X_$(mt)_$(yyyy)_$(vv)")
+        uppercase("$(tag)_$(nx)X_$(mt)_$(yyyy)_$(vv)$(rev_naming)")
     else
-        return uppercase("$(tag)_$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)")
+        uppercase("$(tag)_$(prefix)_$(nx)X_$(mt)_$(yyyy)_$(vv)$(rev_naming)")
     end;
+
+    return gmtag
 );
 
 griddingmachine_tag(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::String, vv::String, ::Nothing) = (
     tag = config["GRIDDINGMACHINE"]["TAG"];
+    rev_tag = haskey(config["GRIDDINGMACHINE"], "REVISION") ? config["GRIDDINGMACHINE"]["REVISION"] : "";
+    rev_naming = rev_tag == "" ? "" : "_$(rev_tag)";
 
-    if tag == ""
-        return uppercase("$(prefix)_$(nx)X_$(mt)_$(vv)")
+    gmtag = if tag == ""
+        uppercase("$(prefix)_$(nx)X_$(mt)_$(vv)$(rev_naming)")
     elseif occursin(prefix, tag)
-        return uppercase("$(tag)_$(nx)X_$(mt)_$(vv)")
+        uppercase("$(tag)_$(nx)X_$(mt)_$(vv)$(rev_naming)")
     else
-        return uppercase("$(tag)_$(prefix)_$(nx)X_$(mt)_$(vv)")
+        uppercase("$(tag)_$(prefix)_$(nx)X_$(mt)_$(vv)$(rev_naming)")
     end;
+
+    return gmtag
 );
 
 
@@ -41,5 +49,13 @@ original_file(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::Str
 original_file(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::String, vv::String, ::Nothing) = joinpath(original_folder(config), "$(prefix)_$(nx)X_$(mt)_$(vv).nc");
 
 reprocessed_folder(config::Union{Dict, OrderedDict}) = joinpath(GRIDDING_MACHINE_HOME, "reprocessed", config["FOLDER"]["REPROCESSED"]);
-reprocessed_file(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}) =
-    joinpath(reprocessed_folder(config), "$(griddingmachine_tag(config, prefix, nx, mt, vv, yyyy)).nc");
+reprocessed_file(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::String, vv::String, yyyy::Union{Int,Nothing}) = (
+    gmtag = griddingmachine_tag(config, prefix, nx, mt, vv, yyyy);
+
+    # make sure the tag does not exist in current Artifacts.YANL file
+    current_library = read_library("$(@__DIR__)/../../Artifacts.yaml");
+    current_tags = keys(current_library);
+    @assert !(gmtag in current_tags) "GriddingMachine tag $gmtag already exists!";
+
+    return joinpath(reprocessed_folder(config), "$(gmtag).nc")
+);

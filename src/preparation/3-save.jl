@@ -13,7 +13,7 @@ function save_input!(config::Union{Dict, OrderedDict}, data::Array, filepath::St
     @assert data_or_std in ["data", "std"] "data_or_std must be either 'data' or 'std";
 
     # save the data to a netcdf file
-    data_attributes = Dict{String,String}(
+    data_attributes = Dict{String,Any}(
                 "about" => config[uppercase(data_or_std)]["ABOUT"],
                 "unit"  => config[uppercase(data_or_std)]["UNIT"],
     );

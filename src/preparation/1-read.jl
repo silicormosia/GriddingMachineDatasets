@@ -17,7 +17,7 @@ read_input(config::Union{Dict, OrderedDict}, prefix::String, nx::Int, mt::String
     if haskey(config, uppercase(data_or_std))
         dict_data = config[uppercase(data_or_std)];
         idx = findfirst(x -> x == prefix, config["FILE"]["PREFIX"]);
-        return read_input(original_file(config, prefix, nx, mt, vv, yyyy), dict_data, dict_data["LABEL"][idx])
+        return read_input(original_file(config, prefix, nx, mt, vv, yyyy), dict_data["LABEL"][idx], dict_data)
     end;
 
     return nothing
@@ -27,7 +27,7 @@ read_input(filepath::String, varname::String, dict::Union{Dict, OrderedDict}) = 
     @assert isfile(filepath) "original file $filepath not found...";
 
     # read the data from the netCDF file
-    data = read_nc(filepath, varname);
+    data = read_nc(Float32, filepath, varname);
     ndim = ndims(data);
 
     # clear the change logs
@@ -74,6 +74,26 @@ read_input(filepath::String, varname::String, dict::Union{Dict, OrderedDict}) = 
         push!(dict["CHANGE_LOGS_TO_WRITE"], "Data has been limited within $(dict["LIMITS"][1]) and $(dict["LIMITS"][2]).");
         mask = data_d .< dict["LIMITS"][1] .|| data_d .> dict["LIMITS"][2];
         data_d[mask] .= NaN;
+    end;
+
+    # gapfill the data based on the setting
+    gapfill = dict["GAPFILL"];
+    mthd = if typeof(gapfill) <: Number
+        gapfill = FillMethodConstant(gapfill);
+    elseif uppercase(gapfill) == "MEAN"
+        FillMethodMean();
+    else
+        error("Unsupported GAPFILL method: $gapfill");
+    end;
+    if size(data_d, 1) in [360, 720, 1440]
+        land_mask = regrid(read_dataset("LM_4X_1Y_V1"), size(data_d, 1) ÷ 360);
+        n_gapfill = fill_missing_values!(data_d, land_mask, mthd);
+        @info "Gaps filled" n_gapfill;
+        if n_gapfill > 0
+            push!(dict["CHANGE_LOGS_TO_WRITE"], "Filled $n_gapfill missing values based on the specified gapfill method.");
+        end;
+    else
+        @info "Resolution not meeting our requirements for gapfilling. Skipping...";
     end;
 
     return data_d

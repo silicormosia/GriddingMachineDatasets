@@ -6,6 +6,7 @@ authors = ["Yujie Wang"]
 [deps]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 GriddingMachine = "f20cf718-bf4d-4727-bc8f-485b1f283ac6"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 NetcdfIO = "6a36f34d-89cf-423a-87c4-84549e82f670"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
@@ -16,5 +17,11 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
+[sources]
+GriddingMachine = {rev = "wyujie", url = "https://github.com/CliMA/GriddingMachine.jl.git"}
+NetcdfIO = {rev = "wyujie", url = "https://github.com/Yujie-W/NetcdfIO.jl.git"}
+PkgUtility = {rev = "wyujie", url = "https://github.com/Yujie-W/PkgUtility.jl.git"}
+
 [compat]
+HTTP = "1.10.19"
 PkgUtility = "0.3.1"

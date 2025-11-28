@@ -26,7 +26,7 @@ function verify_data!(
     end;
 
     # save data to a local file path
-    save_nc!(cache_data_path, "test", data, Dict{String,String}("about" => "test data"));
+    save_nc!(cache_data_path, "test", data, Dict{String,Any}("about" => "test data"));
 
     # call python script externally to plot the data
     if haskey(dict, "LIMITS")

@@ -1,20 +1,27 @@
 module GriddingMachineDatasets
 
+using HTTP
 using Revise
 
 using ArchGDAL: getband, read
-using NetcdfIO: append_nc!, read_nc, save_nc!
+using GriddingMachine.Indexer: read_dataset
+using NetcdfIO: append_nc!, dimname_nc, read_nc, save_nc!, size_nc, varname_nc
 using OrderedCollections: OrderedDict
 using PkgUtility.ArtifactTools: read_library
+using PkgUtility.MathTools: nanmax, nanmean, nanmin, regrid
 
 
 # GLOABL VARIABLES
 GRIDDING_MACHINE_HOME = joinpath(homedir(), "GriddingMachine");
 
 
-# pipelines
+# pipeline to process the dataset
 #     0. pre-processing, used to convert other formats to netCDF
 #     1. reading the netCDF file and do some basic processing
+#     2. verifying the data by plotting and asking the user to verify
+#     3. saving the processed data to a netCDF file
+#     4. functions related to the tagging system
+include("preparation/0-gapfill.jl");
 include("preparation/0-geotiff.jl");
 include("preparation/1-read.jl");
 include("preparation/2-verify.jl");
@@ -22,15 +29,14 @@ include("preparation/3-save.jl");
 include("preparation/4-tag.jl");
 include("preparation/pipeline.jl");
 
+# pipeline to deploy the datasets
+#     1. verifying the variables to make sure the data is correct
+#        - not exceeding the limits
+#        - no NaN values per requirement (if not processed using our pipeline above, double check anyway)
+#          - land and ocean (both)
+#          - land only (land)
+include("deployment/1-verification.jl");
+include("deployment/2-upload.jl");
 
-#     using NetcdfIO: append_nc!, save_nc!
-#
-#
-#
-#     include("process-input/process.jl");
-#
-#     include("deploy-artifact/gmtag.jl");
-#     include("deploy-artifact/create.jl");
-#     include("deploy-artifact/deploy.jl");
-#
+
 end # module
