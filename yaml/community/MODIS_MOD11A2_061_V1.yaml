@@ -1,0 +1,38 @@
+# File name patterns
+# Note that if YYYY does not exist, then it is not a duplicated task
+# These keys are mandatory:
+#     - PATTERN
+#     - PREFIX
+#     - NX
+#     - MT
+#     - VV
+FILE:
+  PATTERN : "PREFIX_NX_MT_YYYY_VV.nc"
+  PREFIX  : ["Day", "Night"]
+  NX      : [1]
+  MT      : ["8D", "1M"]
+  YYYY    : [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+  VV      : ["V1"]
+
+# Folder structure for input and output
+FOLDER:
+  ORIGINAL    : "GEE/MOD11A2_061"
+  REPROCESSED : "GEE/MOD11A2_061"
+  TARBALL     : "GEE/MOD11A2_061"
+
+# Data configuration
+# Note that the labels should match the PREFIX in FILE section
+DATA:
+  ABOUT          : "Land skin temperature"
+  CHANGE_LOGS    : ["Converted to NetCDF format"]
+  LABEL          : ["LST", "LST"]
+  LIMITS         : [170, 400]
+  REV_LAT        : True
+  SCALING        : "linear"
+  SCALING_FACTOR : [0.02, 0]
+  UNIT           : "unitless"
+  VERIFY_ONCE    : True
+
+# GriddingMachine configuration
+GRIDDINGMACHINE:
+  TAG : LST_MOD11A2

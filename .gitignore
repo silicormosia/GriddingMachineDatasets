@@ -4,4 +4,4 @@
 
 # exceptions
 !Artifacts.yaml
-!yaml/*.yaml
+!yaml/*/*.yaml
