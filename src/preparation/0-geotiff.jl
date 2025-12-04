@@ -1,3 +1,5 @@
+#=
+using ArchGDAL
 """
 
     read_geotiff(filepath::String, band::Int)
@@ -10,8 +12,9 @@ Reads a geotiff file and returns the data of the specified band, given
 function read_geotiff end;
 
 read_geotiff(filepath::String, band::Int) = (
-    dset = read(filepath);
-    data = getband(dset, band);
+    dset = ArchGDAL.read(filepath);
+    data = ArchGDAL.getband(dset, band);
 
     return data[:,:]
 );
+=#
