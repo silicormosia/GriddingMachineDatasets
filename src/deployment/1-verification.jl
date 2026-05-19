@@ -11,7 +11,7 @@ Verify the processed data, given
 """
 function verify_processed_data! end;
 
-verify_processed_data!(filepath::String, coverage::String, limits::Vector{<:Number}) = verify_processed_data!(filepath, coverage, (limits[1], limits[2]));
+verify_processed_data!(filepath::String, coverage::String, limits::Vector{<:Number}) = verify_processed_data!(filepath, coverage, (limits...,));
 
 verify_processed_data!(filepath::String, coverage::String, limits::Tuple{<:Number,<:Number}) = (
     # make sure the file exists and the coverage is valid
