@@ -1,6 +1,6 @@
 # this script is meant to regrid the ERA5 datasets to different spatial resolutions
 using Dates: month, now, year
-using NetcdfIO: NCDataset, read_nc, save_nc!, size_nc, varname_nc
+using NetcdfIO: NCDataset, read_nc, save_nc!, read_dims
 using PkgUtility.MathTools: nanmean, regrid
 using PkgUtility.PrettyDisplay: pretty_display!
 using ProgressMeter: @showprogress
@@ -25,7 +25,7 @@ function regrid_ERA5!(yyyy::Int, nx::Int, varlabel::String, varname::String)
 
     # define an empty 3d array to store the regridded data
     pretty_display!("Creating an empty array for the regridded data ...", "tinfo_mid");
-    sizes = size_nc(file_in, varname)[end];
+    sizes = read_dims(file_in, varname)[end];
     nlon = sizes[1];
     nlat = sizes[2] - 1;
     nind = sizes[3];
