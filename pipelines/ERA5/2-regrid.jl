@@ -35,15 +35,18 @@ function regrid_ERA5!(yyyy::Int, nx::Int, varlabel::String, varname::String)
     regridded .= Float32(NaN);
 
     # process the file per slice
+    #     - read in the data first (RAM intensive)
     #     - read in the data slice
     #     - add one column to the longitude to add that of 360
     #     - take the nanmean to the center of a grid box (4 corners)
     #     - shift the longitude from (0, 360) to (-180, 180)
     #     - regrid the data to the new resolution
-    pretty_display!("Reading and regridding $(varname) per time slice...", "tinfo_mid");
-    dset = NCDataset(file_in, "r");
+    pretty_display!("Reading $(varname)...", "tinfo_mid");
+    data_all = read_nc(file_in, varname);
+    replace!(data_all, missing=>Float32(NaN));
+    pretty_display!("Regridding $(varname) per time slice...", "tinfo_mid");
     @showprogress for ind in 1:sizes[3]
-        _mat = replace(read_nc(dset, varname, ind), missing=>Float32(NaN));
+        _mat = data_all[:,:,ind];
         mat_ = [_mat; _mat[1:1,:]];
         for i in axes(matx,1), j in axes(matx,2)
             matx[i,j] = nanmean(mat_[i:i+1,j:j+1])
@@ -52,7 +55,6 @@ function regrid_ERA5!(yyyy::Int, nx::Int, varlabel::String, varname::String)
         mati[nlon÷2+1:end,:] = matx[1:nlon÷2,:];
         regridded[:,:,ind] .= regrid(mati, nx);
     end;
-    close(dset);
 
     # save the regridded dataset
     pretty_display!("Saving regridded dataset to $(file_out)...", "tinfo_mid");

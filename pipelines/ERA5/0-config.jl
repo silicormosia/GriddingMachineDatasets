@@ -37,5 +37,7 @@ ERA5_SL_HOURLY_LAYERS = [
     "msdrswrf", "msdwlwrf", "msdwswrf", "msdwuvrf",
     "sp", "tp"
 ];
-EARLIEST_YEAR = 1980;
-LATEST_YEAR = year(now()) - (month(now()) < 4);
+EARLIEST_YEAR = 2024;
+LATEST_YEAR = 2024;
+# EARLIEST_YEAR = 1980;
+# LATEST_YEAR = year(now()) - (month(now()) < 4);
